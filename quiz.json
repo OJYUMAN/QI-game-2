@@ -1,14 +1,14 @@
 {
     "quiz": [
         {
-            "question": "What is the Thai word for 'hello'?",
+            "question": "What is the capital of Thailand?",
             "choices": [
-                "สวัสดี (Sawasdee)",
-                "ขอบคุณ (Khob Khun)",
-                "ชาวไทย (Chao Thai)",
-                "ร้านอาหาร (Raan Ahaan)"
+                "Bangkok",
+                "Chiang Mai",
+                "Phuket",
+                "Pattaya"
             ],
-            "answer": "สวัสดี (Sawasdee)"
+            "answer": "Bangkok"
         }
     ]
 }

@@ -10,33 +10,6 @@ from PyQt5.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QDialog, QTe
 WIDTH = 1400
 HEIGHT = 800
 
-# Particle class for background effects
-class Particle:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-        self.size = random.randint(2, 4)
-        self.color = (random.randint(50, 150), random.randint(50, 150), 255)
-        self.speed = random.uniform(0.5, 1.5)
-        self.angle = random.uniform(0, 2 * math.pi)
-
-    def update(self):
-        self.x += math.cos(self.angle) * self.speed
-        self.y += math.sin(self.angle) * self.speed
-        
-        # Wrap around screen
-        if self.x < 0:
-            self.x = WIDTH
-        elif self.x > WIDTH:
-            self.x = 0
-        if self.y < 0:
-            self.y = HEIGHT
-        elif self.y > HEIGHT:
-            self.y = 0
-
-    def draw(self, screen):
-        pygame.draw.circle(screen, self.color, (int(self.x), int(self.y)), self.size)
-
 class ModernButton:
     def __init__(self, x, y, width, height, text, color, hover_color, font):
         self.x = x
@@ -104,18 +77,25 @@ class ModernButton:
 
 def welcome_screen():
     pygame.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Set new screen dimensions
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
     running = True
     
-    # Create particles for background effect
-    particles = [Particle(random.randint(0, WIDTH), random.randint(0, HEIGHT)) 
-                for _ in range(75)]  # Increased number of particles for larger screen
+    # Initialize font
+    font = pygame.font.Font(None, 64)  # Default font with size 64
+    
+    # Load and scale background image
+    try:
+        background_image = pygame.image.load('background.jpg')  # Replace with your image path
+        background_image = pygame.transform.scale(background_image, (WIDTH, HEIGHT))
+    except pygame.error as e:
+        print(f"Couldn't load background image: {e}")
+        background_image = None
     
     # Create modern button
     start_button = ModernButton(
-        WIDTH // 2 - 100,  # Centered horizontally
-        HEIGHT // 2 + 100,  # Adjusted vertical position for larger screen
+        WIDTH // 2 - 100,
+        HEIGHT // 2 + 300,
         200,
         50,
         "Start Quiz",
@@ -130,51 +110,31 @@ def welcome_screen():
     alpha = 0
     
     while running:
-        # Update background color with a subtle gradient
-        screen.fill((20, 24, 35))
+        # Draw background
+        if background_image:
+            screen.blit(background_image, (0, 0))
+        else:
+            # Fallback to original background color if image fails to load
+            screen.fill((20, 24, 35))
         
-        # Update and draw particles
-        for particle in particles:
-            particle.update()
-            particle.draw(screen)
-        
-        # Animate title
-        title_offset += 0.1 * title_direction
-        if abs(title_offset) > 5:
-            title_direction *= -1
-            
-        # Fade in effect
-        if alpha < 255:
-            alpha += 2
-        
-        # Render welcome text with improved style
-        welcome_text = font.render("Welcome to QI-game", True, (255, 255, 255))
-        subtitle_text = pygame.font.Font(None, 36).render("Quiz Intelligence", True, (150, 150, 150))
-        
-        # Center the texts
-        welcome_text_rect = welcome_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 150 + title_offset))
-        subtitle_rect = subtitle_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
-        
-        # Create transparent surfaces for fade effect
-        welcome_surface = pygame.Surface(welcome_text.get_size(), pygame.SRCALPHA)
-        welcome_surface.fill((255, 255, 255, min(alpha, 255)))
-        welcome_text.blit(welcome_surface, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
-        
-        # Draw texts
-        screen.blit(welcome_text, welcome_text_rect)
-        screen.blit(subtitle_text, subtitle_rect)
+       
+    
         
         # Update and draw button
         start_button.update()
         start_button.draw(screen)
         
+        # Handle events
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                exit()
+                sys.exit()
             if start_button.is_clicked(event):
                 show_popup()
                 running = False
         
         pygame.display.flip()
         clock.tick(60)
+
+if __name__ == "__main__":
+    welcome_screen()

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head></head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Remote Control Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 15px;
+            font-size: 18px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        input {
+            padding: 8px;
+            margin: 5px 0;
+            width: 200px;
+        }
+        .error {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h2>Remote Control</h2>
+    <div>
+        <label for="username">Enter your name:</label>
+        <input type="text" id="username" placeholder="Your name">
+        <div id="error" class="error">Please enter your name before sending commands.</div>
+    </div>
+    <div class="control-panel">
+        <button onclick="sendControl('1')">1</button>
+        <button onclick="sendControl('2')">2</button>
+        <button onclick="sendControl('3')">3</button>
+        <button onclick="sendControl('4')">4</button>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+        import { getDatabase, ref, push, connectDatabaseEmulator } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-analytics.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAzHTUSe1WrFIyIKfixOXd3u537DZIcBnc",
+            authDomain: "qi-game.firebaseapp.com",
+            databaseURL: "https://qi-game-default-rtdb.asia-southeast1.firebasedatabase.app", // Updated URL
+            projectId: "qi-game",
+            storageBucket: "qi-game.firebasestorage.app",
+            messagingSenderId: "1000626412969",
+            appId: "1:1000626412969:web:d1d391c7ed05cd5e7b78b8",
+            measurementId: "G-TP3S9DKF7X"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // Rate limiting variables
+        let lastCommandTime = 0;
+        const THROTTLE_MS = 500; // Minimum time between commands
+
+        // Make sendControl function globally accessible
+        window.sendControl = function(command) {
+            const username = document.getElementById("username").value.trim();
+            const errorDiv = document.getElementById("error");
+            
+            // Validate username
+            if (!username) {
+                errorDiv.style.display = "block";
+                return;
+            }
+            errorDiv.style.display = "none";
+
+            // Rate limiting
+            const now = Date.now();
+            if (now - lastCommandTime < THROTTLE_MS) {
+                console.log("Please wait before sending another command");
+                return;
+            }
+            lastCommandTime = now;
+
+            // Validate command
+            const validCommands = ['1', '2', '3', '4'];
+            if (!validCommands.includes(command)) {
+                console.error("Invalid command");
+                return;
+            }
+
+            try {
+                // Send command to Firebase
+                push(ref(database, 'controls/'), {
+                    name: username,
+                    command: command,
+                    timestamp: now
+                }).catch(error => {
+                    console.error("Error sending command:", error);
+                });
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+    </script>
+</body>
+</html>

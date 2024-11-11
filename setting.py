@@ -22,68 +22,71 @@ class ModernDialog(QDialog):
     def initUI(self):
         self.setWindowTitle("Quiz Settings")
         self.setStyleSheet("""
-            QDialog {
-                background-color: #f0f2f5;
-            }
-            QLabel {
-                color: #2c3e50;
-                font-size: 14px;
-                font-weight: bold;
-                margin-top: 10px;
-            }
-            QTextEdit {
-                border: 2px solid #e0e0e0;
-                border-radius: 8px;
-                padding: 8px;
-                background-color: white;
-                font-size: 13px;
-            }
-            QComboBox {
-                border: 2px solid #e0e0e0;
-                border-radius: 6px;
-                padding: 5px;
-                background-color: white;
-                min-width: 200px;
-                font-size: 13px;
-            }
-            QComboBox:hover {
-                border-color: #3498db;
-            }
-            QSpinBox {
-                border: 2px solid #e0e0e0;
-                border-radius: 6px;
-                padding: 5px;
-                background-color: white;
-                min-width: 200px;
-                font-size: 13px;
-            }
-            QSpinBox:hover {
-                border-color: #3498db;
-            }
-            QPushButton {
-                background-color: #3498db;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                padding: 10px 20px;
-                font-size: 14px;
-                font-weight: bold;
-                min-width: 120px;
-            }
-            QPushButton:hover {
-                background-color: #2980b9;
-            }
-            QPushButton#fileButton {
-                background-color: #95a5a6;
-            }
-            QPushButton#fileButton:hover {
-                background-color: #7f8c8d;
-            }
-            QFrame#settingsFrame {
-                background-color: white;
-                border-radius: 10px;
-                padding: 20px;
-            }
+           QDialog {
+    background-color: #f0f2f5;
+}
+QLabel {
+    color: #2c3e50;  
+    font-size: 14px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+QTextEdit {
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 8px;
+    background-color: white;
+    color: #333333;  
+    font-size: 13px;
+}
+QComboBox {
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: white;
+    color: #333333;  
+    font-size: 13px;
+}
+QComboBox:hover {
+    border-color: #3498db;
+}
+QSpinBox {
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    padding: 5px;
+    background-color: white;
+    color: #333333;  
+    min-width: 200px;
+    font-size: 13px;
+}
+QSpinBox:hover {
+    border-color: #3498db;
+}
+QPushButton {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: bold;
+    min-width: 120px;
+}
+QPushButton:hover {
+    background-color: #2980b9;
+}
+QPushButton#fileButton {
+    background-color: #95a5a6;
+}
+QPushButton#fileButton:hover {
+    background-color: #7f8c8d;
+}
+QFrame#settingsFrame {
+    background-color: white;
+    color: #333333;  
+    border-radius: 10px;
+    padding: 20px;
+}
         """)
         
         # Main layout

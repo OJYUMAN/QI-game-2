@@ -40,7 +40,7 @@ def handle_prompt(content, number, level, language):
         ]
     }}
 
-    Please generate {number} questions with a difficulty level of "{level}". Use the Thai {language} to compose the questions.
+    Please generate {number} questions with a difficulty level of "{level}". Use the {language} to compose the questions.
 
     Lesson content: "{content}"
     """
