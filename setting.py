@@ -1,6 +1,5 @@
 import pygame
 from gpt import handle_prompt
-from main import *
 import sys
 from PyQt5.QtWidgets import (QApplication, QDialog, QVBoxLayout, QTextEdit, 
                             QPushButton, QFileDialog, QLabel, QComboBox, 

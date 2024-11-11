@@ -1,14 +1,14 @@
 {
     "quiz": [
         {
-            "question": "What is the capital of Thailand?",
+            "question": "What is the primary purpose of a car's radiator?",
             "choices": [
-                "Bangkok",
-                "Chiang Mai",
-                "Phuket",
-                "Pattaya"
+                "A. To cool the engine",
+                "B. To heat the cabin",
+                "C. To power the headlights",
+                "D. To inflate the tires"
             ],
-            "answer": "Bangkok"
+            "answer": "A. To cool the engine"
         }
     ]
 }
