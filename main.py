@@ -1,6 +1,8 @@
 import pygame
 import json
 import math
+from setting import *
+
 
 # Load quiz data from JSON file
 def load_quiz(filename):
@@ -9,7 +11,7 @@ def load_quiz(filename):
 
 pygame.init()
 
-# Enhanced color palette
+# color palette
 WHITE = (255, 255, 255)
 BLACK = (20, 20, 20)
 BLUE = (41, 128, 185)
@@ -26,8 +28,8 @@ pygame.display.set_caption("QI-game")
 font = pygame.font.Font("thai.ttf", 24)
 small_font = pygame.font.Font("thai.ttf", 18)
 
-COUNTDOWN_TIME = 5000  # 5 seconds in milliseconds
 
+#question button
 class ModernButton:
     def __init__(self, x, y, width, height, text, color, hover_color, font):
         self.rect = pygame.Rect(x, y, width, height)
@@ -124,6 +126,8 @@ def draw_progress_bar(screen, progress, total, x, y, width, height):
                         (x, y, progress_width, height),
                         border_radius=height//2)
 
+
+   
 def draw_timer(screen, time_left, total_time):
     # Convert to angle
     angle = (time_left / total_time) * 360
@@ -153,6 +157,7 @@ def draw_timer(screen, time_left, total_time):
     time_rect = time_text.get_rect(center=center)
     screen.blit(time_text, time_rect)
 
+
 def display_question(question_data, screen, font, buttons, time_left, question_number, total_questions):
     # Background
     screen.fill(BACKGROUND)
@@ -164,8 +169,9 @@ def display_question(question_data, screen, font, buttons, time_left, question_n
     # Progress bar
     draw_progress_bar(screen, question_number + 1, total_questions, 50, 50, WIDTH - 200, 10)
     
-    # Timer
-    draw_timer(screen, time_left, COUNTDOWN_TIME)
+    # Timer - Use the current countdown time
+    current_countdown = get_countdown_time()
+    draw_timer(screen, time_left, current_countdown)
     
     # Question text with word wrapping
     words = question_data['question'].split()
@@ -265,6 +271,9 @@ def quiz_game():
     while running:
         question = quiz_data['quiz'][question_index]
         start_time = pygame.time.get_ticks()
+        
+        # Get the current countdown time at the start of each question
+        current_countdown = get_countdown_time()
 
         # Create buttons for each choice
         buttons = []
@@ -279,7 +288,7 @@ def quiz_game():
             clock.tick(60)  # Limit to 60 FPS for smooth animations
             
             current_time = pygame.time.get_ticks()
-            time_left = COUNTDOWN_TIME - (current_time - start_time)
+            time_left = current_countdown - (current_time - start_time)
             
             if time_left <= 0:
                 display_timeout()

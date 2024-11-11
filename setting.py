@@ -8,11 +8,13 @@ from PyQt5.QtWidgets import (QApplication, QDialog, QVBoxLayout, QTextEdit,
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont, QIcon, QPalette, QColor
 
-# Initialize the QApplication at the module level
+# Remove the global COUNTDOWN_TIME and create a class variable instead
 if not QApplication.instance():
     app = QApplication(sys.argv)
 
 class ModernDialog(QDialog):
+    countdown_time = 30000  # Class variable for countdown time
+    
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -206,21 +208,42 @@ class ModernDialog(QDialog):
         print(f"Time per question: {countdown_time}")
         print(f"Selected file path: {self.file_path}")
         
+        # Update the class variable instead of the global variable
+        ModernDialog.countdown_time = countdown_time * 1000  # Convert seconds to milliseconds
         self.accept()
 
+    @classmethod
+    def get_countdown_time(cls):
+        return cls.countdown_time
+
 def show_popup():
-    # Create the dialog
     dialog = ModernDialog()
     dialog.setFixedSize(600, 700)
     return dialog.exec_()
 
-# Only create QApplication if it doesn't exist
 def initialize_qt():
     if not QApplication.instance():
         app = QApplication(sys.argv)
     return QApplication.instance()
 
+def get_countdown_time():
+    return ModernDialog.countdown_time
+
 if __name__ == '__main__':
     app = initialize_qt()
     show_popup()
     sys.exit(app.exec_())
+
+
+
+
+
+
+
+
+
+
+
+
+
+     

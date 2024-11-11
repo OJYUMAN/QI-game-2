@@ -1,14 +1,14 @@
 {
     "quiz": [
         {
-            "question": "What is the national sport of Thailand?",
+            "question": "What is the Thai word for 'hello'?",
             "choices": [
-                "Muay Thai",
-                "Football",
-                "Badminton",
-                "Basketball"
+                "สวัสดี (Sawasdee)",
+                "ขอบคุณ (Khob Khun)",
+                "ชาวไทย (Chao Thai)",
+                "ร้านอาหาร (Raan Ahaan)"
             ],
-            "answer": "Muay Thai"
+            "answer": "สวัสดี (Sawasdee)"
         }
     ]
 }
