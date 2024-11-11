@@ -3,8 +3,6 @@ import json
 import math
 from setting import *
 
-
-# Load quiz data from JSON file
 def load_quiz(filename):
     with open(filename, 'r') as f:
         return json.load(f)
@@ -14,24 +12,33 @@ pygame.init()
 # color palette
 WHITE = (255, 255, 255)
 BLACK = (20, 20, 20)
-BLUE = (41, 128, 185)
-GREEN = (46, 204, 113)
-RED = (231, 76, 60)
-LIGHT_BLUE = (52, 152, 219)
 BACKGROUND = (236, 240, 241)
 GRAY = (149, 165, 166)
+themecolor = (40,40,40)
+
+CHOICE_COLORS = [
+    (226, 27, 60),   # Red
+    (19, 104, 206),  # Blue
+    (216, 158, 0),   # Yellow
+    (38, 137, 12)    # Green
+]
+
+CHOICE_HOVER_COLORS = [
+    (255, 66, 95),   # Light Red
+    (48, 144, 255),  # Light Blue
+    (255, 194, 26),  # Light Yellow
+    (76, 175, 49)    # Light Green
+]
 
 # Screen settings
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1400, 800
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("QI-game")
 font = pygame.font.Font("thai.ttf", 24)
 small_font = pygame.font.Font("thai.ttf", 18)
 
-
-#question button
 class ModernButton:
-    def __init__(self, x, y, width, height, text, color, hover_color, font):
+    def __init__(self, x, y, width, height, text, color, hover_color, font, number):
         self.rect = pygame.Rect(x, y, width, height)
         self.text = text
         self.color = color
@@ -45,6 +52,7 @@ class ModernButton:
         self.selected = False
         self.correct = False
         self.wrong = False
+        self.number = number
     
     def update(self):
         # Smooth color transition
@@ -80,9 +88,9 @@ class ModernButton:
         
         if self.selected:
             if self.correct:
-                color = (*GREEN, self.alpha)
+                color = (46, 204, 113, self.alpha)  # Green
             elif self.wrong:
-                color = (*RED, self.alpha)
+                color = (231, 76, 60, self.alpha)   # Red
             else:
                 color = (*self.current_color, self.alpha)
         else:
@@ -101,13 +109,22 @@ class ModernButton:
         
         screen.blit(button_surface, self.rect)
         
-        # Draw text with shadow
+        # Draw number and text
+        number_text = self.font.render(f"{self.number}. ", True, WHITE)
         text_surface = self.font.render(self.text, True, WHITE)
-        text_shadow = self.font.render(self.text, True, (0, 0, 0, 100))
-        text_rect = text_surface.get_rect(center=self.rect.center)
         
-        # Draw shadow slightly offset
-        screen.blit(text_shadow, (text_rect.x + 2, text_rect.y + 2))
+        # Calculate positions
+        number_rect = number_text.get_rect(midleft=(self.rect.x + 20, self.rect.centery))
+        text_rect = text_surface.get_rect(midleft=(number_rect.right + 10, self.rect.centery))
+        
+        # Draw text shadows
+        screen.blit(self.font.render(f"{self.number}. ", True, (0, 0, 0, 100)), 
+                   (number_rect.x + 2, number_rect.y + 2))
+        screen.blit(self.font.render(self.text, True, (0, 0, 0, 100)), 
+                   (text_rect.x + 2, text_rect.y + 2))
+        
+        # Draw actual text
+        screen.blit(number_text, number_rect)
         screen.blit(text_surface, text_rect)
     
     def is_clicked(self, event):
@@ -122,58 +139,43 @@ def draw_progress_bar(screen, progress, total, x, y, width, height):
     # Progress
     progress_width = (width * progress) // total
     if progress_width > 0:
-        pygame.draw.rect(screen, BLUE, 
+        pygame.draw.rect(screen, themecolor, 
                         (x, y, progress_width, height),
                         border_radius=height//2)
 
-
-   
 def draw_timer(screen, time_left, total_time):
-    # Convert to angle
     angle = (time_left / total_time) * 360
-    
-    # Draw timer circle
     center = (WIDTH - 50, 50)
     radius = 30
     
-    # Background circle
     pygame.draw.circle(screen, GRAY, center, radius)
     
-    # Progress arc
     if angle > 0:
         surface = pygame.Surface((radius * 2, radius * 2), pygame.SRCALPHA)
-        pygame.draw.arc(surface, BLUE, 
+        pygame.draw.arc(surface, themecolor, 
                        (0, 0, radius * 2, radius * 2),
                        -90 * (math.pi / 180),
                        (angle - 90) * (math.pi / 180),
                        radius)
         screen.blit(surface, (center[0] - radius, center[1] - radius))
     
-    # Center circle
     pygame.draw.circle(screen, WHITE, center, radius - 5)
     
-    # Time text
     time_text = small_font.render(f"{int(time_left/1000)}", True, BLACK)
     time_rect = time_text.get_rect(center=center)
     screen.blit(time_text, time_rect)
 
-
 def display_question(question_data, screen, font, buttons, time_left, question_number, total_questions):
-    # Background
     screen.fill(BACKGROUND)
     
-    # Question number
     progress_text = small_font.render(f"Question {question_number + 1}/{total_questions}", True, GRAY)
     screen.blit(progress_text, (50, 20))
     
-    # Progress bar
     draw_progress_bar(screen, question_number + 1, total_questions, 50, 50, WIDTH - 200, 10)
     
-    # Timer - Use the current countdown time
     current_countdown = get_countdown_time()
     draw_timer(screen, time_left, current_countdown)
     
-    # Question text with word wrapping
     words = question_data['question'].split()
     lines = []
     current_line = words[0]
@@ -189,7 +191,6 @@ def display_question(question_data, screen, font, buttons, time_left, question_n
         question_text = font.render(line, True, BLACK)
         screen.blit(question_text, (50, 100 + i * 30))
     
-    # Update and draw buttons
     for button in buttons:
         button.update()
         button.draw(screen)
@@ -197,20 +198,17 @@ def display_question(question_data, screen, font, buttons, time_left, question_n
 def display_feedback(is_correct, correct_answer, score, total_questions):
     screen.fill(BACKGROUND)
     
-    # Create feedback message
     if is_correct:
         message = "Correct!"
-        color = GREEN
+        color = CHOICE_COLORS[2]  # Green
     else:
         message = f"Wrong! Correct answer: {correct_answer}"
-        color = RED
+        color = (231, 76, 60)  # Red
     
-    # Draw centered feedback message
     feedback_text = font.render(message, True, color)
     feedback_rect = feedback_text.get_rect(center=(WIDTH//2, HEIGHT//2))
     
-    # Draw score
-    score_text = small_font.render(f"Score: {score}/{total_questions}", True, BLUE)
+    score_text = small_font.render(f"Score: {score}/{total_questions}", True, CHOICE_COLORS[0])
     score_rect = score_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 50))
     
     screen.blit(feedback_text, feedback_rect)
@@ -220,7 +218,7 @@ def display_feedback(is_correct, correct_answer, score, total_questions):
 
 def display_timeout():
     screen.fill(BACKGROUND)
-    timeout_text = font.render("Time's up!", True, RED)
+    timeout_text = font.render("Time's up!", True, (231, 76, 60))
     timeout_rect = timeout_text.get_rect(center=(WIDTH//2, HEIGHT//2))
     screen.blit(timeout_text, timeout_rect)
     pygame.display.flip()
@@ -229,32 +227,27 @@ def display_timeout():
 def display_final_score(score, total_questions):
     screen.fill(BACKGROUND)
     
-    # Calculate percentage
     percentage = (score / total_questions) * 100
     
-    # Draw score text
-    score_text = font.render(f"Final Score: {score}/{total_questions}", True, BLUE)
-    percentage_text = font.render(f"{percentage:.1f}%", True, BLUE)
+    score_text = font.render(f"Final Score: {score}/{total_questions}", True, CHOICE_COLORS[0])
+    percentage_text = font.render(f"{percentage:.1f}%", True, CHOICE_COLORS[0])
     
-    # Add encouraging message based on score
     if percentage >= 80:
         message = "Excellent work!"
-        color = GREEN
+        color = CHOICE_COLORS[2]  # Green
     elif percentage >= 60:
         message = "Good job!"
-        color = BLUE
+        color = CHOICE_COLORS[0]  # Blue
     else:
         message = "Keep practicing!"
-        color = RED
+        color = (231, 76, 60)  # Red
     
     message_text = font.render(message, True, color)
     
-    # Position text
     score_rect = score_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 50))
     percentage_rect = percentage_text.get_rect(center=(WIDTH//2, HEIGHT//2))
     message_rect = message_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 50))
     
-    # Draw text
     screen.blit(score_text, score_rect)
     screen.blit(percentage_text, percentage_rect)
     screen.blit(message_text, message_rect)
@@ -271,21 +264,21 @@ def quiz_game():
     while running:
         question = quiz_data['quiz'][question_index]
         start_time = pygame.time.get_ticks()
-        
-        # Get the current countdown time at the start of each question
         current_countdown = get_countdown_time()
 
-        # Create buttons for each choice
         buttons = []
         for i, choice in enumerate(question['choices']):
-            button = ModernButton(50, 200 + i * 70, WIDTH - 100, 60, 
-                                f"{choice}", BLUE, LIGHT_BLUE, font)
+            button = ModernButton(
+                50, 200 + i * 70, WIDTH - 100, 60,
+                choice, CHOICE_COLORS[i], CHOICE_HOVER_COLORS[i],
+                font, i + 1
+            )
             buttons.append(button)
 
         answered = False
 
         while not answered and running:
-            clock.tick(60)  # Limit to 60 FPS for smooth animations
+            clock.tick(60)
             
             current_time = pygame.time.get_ticks()
             time_left = current_countdown - (current_time - start_time)

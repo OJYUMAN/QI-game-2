@@ -6,6 +6,10 @@ from main import *
 import sys
 from PyQt5.QtWidgets import QApplication, QMessageBox, QVBoxLayout, QDialog, QTextEdit, QPushButton, QFileDialog
 
+# Updated screen dimensions
+WIDTH = 1400
+HEIGHT = 800
+
 # Particle class for background effects
 class Particle:
     def __init__(self, x, y):
@@ -100,17 +104,18 @@ class ModernButton:
 
 def welcome_screen():
     pygame.init()
+    screen = pygame.display.set_mode((WIDTH, HEIGHT))  # Set new screen dimensions
     clock = pygame.time.Clock()
     running = True
     
     # Create particles for background effect
     particles = [Particle(random.randint(0, WIDTH), random.randint(0, HEIGHT)) 
-                for _ in range(50)]
+                for _ in range(75)]  # Increased number of particles for larger screen
     
     # Create modern button
     start_button = ModernButton(
-        WIDTH // 2 - 100,
-        HEIGHT // 2 + 50,
+        WIDTH // 2 - 100,  # Centered horizontally
+        HEIGHT // 2 + 100,  # Adjusted vertical position for larger screen
         200,
         50,
         "Start Quiz",
@@ -147,8 +152,8 @@ def welcome_screen():
         subtitle_text = pygame.font.Font(None, 36).render("Quiz Intelligence", True, (150, 150, 150))
         
         # Center the texts
-        welcome_text_rect = welcome_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100 + title_offset))
-        subtitle_rect = subtitle_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 50))
+        welcome_text_rect = welcome_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 150 + title_offset))
+        subtitle_rect = subtitle_text.get_rect(center=(WIDTH // 2, HEIGHT // 2 - 100))
         
         # Create transparent surfaces for fade effect
         welcome_surface = pygame.Surface(welcome_text.get_size(), pygame.SRCALPHA)
