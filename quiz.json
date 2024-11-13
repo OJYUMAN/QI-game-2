@@ -1,14 +1,24 @@
 {
     "quiz": [
         {
-            "question": "What is the primary purpose of a car's radiator?",
+            "question": "โครโมโซมเป็นส่วนประกอบหลักของสิ่งมีชีวิต และอยู่ในอวัยวะใดของเซลล์?",
             "choices": [
-                "A. To cool the engine",
-                "B. To heat the cabin",
-                "C. To power the headlights",
-                "D. To inflate the tires"
+                "ระบบประสาท",
+                "สมอง",
+                "สิ่งหวาย",
+                "สรีระ"
             ],
-            "answer": "A. To cool the engine"
+            "answer": "สรีระ"
+        },
+        {
+            "question": "โครโมโซมมีหน้าที่ในกระบวนการใดของเซลล์?",
+            "choices": [
+                "การเคลื่อนที่ของเซลล์",
+                "การสร้างพลังงาน",
+                "การสร้างโปรตีน",
+                "การควบคุมการทำงานของเซลล์"
+            ],
+            "answer": "การสร้างโปรตีน"
         }
     ]
 }
