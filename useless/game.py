@@ -20,9 +20,9 @@ def listen_for_changes(event):
         
         if command == 'login':
             current_user = name
-            print(f"New user logged in: {name}")
+            return (f"New user logged in: {name}")
         else:
-            print(f"{name} pressed {command}")
+            return (f"{name} pressed {command}")
 
 # Set Firebase listener for real-time updates
 control_ref = db.reference('controls')

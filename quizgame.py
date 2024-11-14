@@ -118,7 +118,7 @@ def quiz_game():
             display_question(question, screen, font, small_font, buttons, time_left, 
                              question_index, len(quiz_data['quiz']), current_countdown)
             
-            print("oj")
+            
             
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:  # Check for quit event

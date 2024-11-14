@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Game</title>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+      background-color: #f0f2f5;
+    }
+
+    .container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .page {
+      display: none;
+    }
+
+    .active {
+      display: block;
+    }
+
+    input,
+    button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .quiz-button {
+      margin: 5px 0;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Name Input Page -->
+    <div id="namePage" class="page active">
+      <h2>Enter Your Name</h2>
+      <input type="text" id="nameInput" placeholder="Your name">
+      <button onclick="submitName()">Start Quiz</button>
+    </div>
+
+    <!-- Quiz Page -->
+    <div id="quizPage" class="page">
+      <h2>Quiz</h2>
+      <p>Select your answer:</p>
+      <button class="quiz-button" onclick="submitAnswer(1)">1</button>
+      <button class="quiz-button" onclick="submitAnswer(2)">2</button>
+      <button class="quiz-button" onclick="submitAnswer(3)">3</button>
+      <button class="quiz-button" onclick="submitAnswer(4)">4</button>
+    </div>
+  </div>
+
+  <script>
+    // Firebase configuration
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "qi-game.firebaseapp.com",
+      databaseURL: "https://qi-game-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "qi-game",
+      storageBucket: "qi-game.appspot.com",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+    let currentName = '';
+
+    function submitName() {
+      const nameInput = document.getElementById('nameInput');
+      const name = nameInput.value.trim();
+
+      if (name) {
+        currentName = name;
+        // Send name to Firebase
+        database.ref('controls').set({
+          name: name,
+          command: 'login'
+        });
+
+        // Switch to quiz page
+        document.getElementById('namePage').classList.remove('active');
+        document.getElementById('quizPage').classList.add('active');
+      } else {
+        alert('Please enter your name');
+      }
+    }
+
+    function submitAnswer(number) {
+      // Send answer to Firebase
+      database.ref('controls').set({
+        name: currentName,
+        command: number.toString()
+      });
+    }
+  </script>
+</body>
+
+</html>

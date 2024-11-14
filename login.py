@@ -126,7 +126,7 @@ class KahootUI:
 
         # Draw the button
         pygame.draw.rect(screen, color, self.quit_button_rect, border_radius=5)
-        quit_text = self.user_font.render("Quit", True, WHITE)
+        quit_text = self.user_font.render("Start", True, WHITE)
         text_rect = quit_text.get_rect(center=self.quit_button_rect.center)
         screen.blit(quit_text, text_rect)
 
