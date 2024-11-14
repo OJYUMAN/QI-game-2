@@ -1,152 +1,139 @@
+
+
+# quiz_game.py
 import pygame
 import json
 from components import (
-    ModernButton, display_question, CHOICE_COLORS, CHOICE_HOVER_COLORS,
+    ModernButton, CHOICE_COLORS, CHOICE_HOVER_COLORS,
     WIDTH, HEIGHT, BACKGROUND, init_game_display
 )
-
+from firebasecontrol import FirebaseManager
 from setting import get_countdown_time
 
-def load_quiz(filename):
-    with open(filename, 'r') as f:
-        return json.load(f)
-
-def display_feedback(screen, font, small_font, is_correct, correct_answer, score, total_questions):
-    screen.fill(BACKGROUND)
-    
-    if is_correct:
-        message = "Correct!"
-        color = CHOICE_COLORS[2]  # Green
-    else:
-        message = f"Wrong! Correct answer: {correct_answer}"
-        color = (231, 76, 60)  # Red
-    
-    feedback_text = font.render(message, True, color)
-    feedback_rect = feedback_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-    
-    score_text = small_font.render(f"Score: {score}/{total_questions}", True, CHOICE_COLORS[0])
-    score_rect = score_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 50))
-    
-    screen.blit(feedback_text, feedback_rect)
-    screen.blit(score_text, score_rect)
-    pygame.display.flip()
-    pygame.time.wait(2000)
-
-def display_timeout(screen, font):
-    screen.fill(BACKGROUND)
-    timeout_text = font.render("Time's up!", True, (231, 76, 60))
-    timeout_rect = timeout_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-    screen.blit(timeout_text, timeout_rect)
-    pygame.display.flip()
-    pygame.time.wait(2000)
-
-def display_final_score(screen, font, small_font, score, total_questions):
-    screen.fill(BACKGROUND)
-    
-    percentage = (score / total_questions) * 100
-    
-    score_text = font.render(f"Final Score: {score}/{total_questions}", True, CHOICE_COLORS[0])
-    percentage_text = font.render(f"{percentage:.1f}%", True, CHOICE_COLORS[0])
-    
-    if percentage >= 80:
-        message = "Excellent work!"
-        color = CHOICE_COLORS[2]  # Green
-    elif percentage >= 60:
-        message = "Good job!"
-        color = CHOICE_COLORS[0]  # Blue
-    else:
-        message = "Keep practicing!"
-        color = (231, 76, 60)  # Red
-    
-    message_text = font.render(message, True, color)
-    
-    score_rect = score_text.get_rect(center=(WIDTH//2, HEIGHT//2 - 50))
-    percentage_rect = percentage_text.get_rect(center=(WIDTH//2, HEIGHT//2))
-    message_rect = message_text.get_rect(center=(WIDTH//2, HEIGHT//2 + 50))
-    
-    screen.blit(score_text, score_rect)
-    screen.blit(percentage_text, percentage_rect)
-    screen.blit(message_text, message_rect)
-    pygame.display.flip()
-    pygame.time.wait(3000)
-
-def quiz_game():
-    # Initialize display and fonts
-    screen, font, small_font = init_game_display()
-    # Load quiz data from 'quiz.json'
-    quiz_data = load_quiz('quiz.json')
-    clock = pygame.time.Clock()  # Setup the game clock for managing time and frames
-    running = True  # Main loop control variable
-    question_index = 0  # Tracks the current question
-    score = 0  # Tracks the player's score
-
-    while running:
-        # Fetch the current question from quiz data
-        question = quiz_data['quiz'][question_index]
-        start_time = pygame.time.get_ticks()  # Record the start time for countdown
-        current_countdown = get_countdown_time()  # Get the initial countdown time
-
-        buttons = []
-        # Create a button for each answer choice
+class MultiplayerQuiz:
+    def __init__(self):
+        self.screen, self.font, self.small_font = init_game_display()
+        self.quiz_data = self.load_quiz('quiz.json')
+        self.firebase = FirebaseManager()
+        self.current_question = 0
+        
+    def load_quiz(self, filename):
+        with open(filename, 'r') as f:
+            return json.load(f)
+            
+    def display_question(self, question, time_left, players):
+        self.screen.fill(BACKGROUND)
+        
+        # Question text
+        question_text = self.font.render(question['question'], True, CHOICE_COLORS[0])
+        question_rect = question_text.get_rect(center=(WIDTH//2, 100))
+        self.screen.blit(question_text, question_rect)
+        
+        # Choices
         for i, choice in enumerate(question['choices']):
             button = ModernButton(
-                50, 200 + i * 70, WIDTH - 100, 60,  
-                choice, CHOICE_COLORS[i], CHOICE_HOVER_COLORS[i],  
-                font, i + 1  # Font and button identifier
+                50, 200 + i * 70, WIDTH - 100, 60,
+                choice, CHOICE_COLORS[i], CHOICE_HOVER_COLORS[i],
+                self.font, i + 1
             )
-            buttons.append(button)
-
-        answered = False  # Flag to check if the question is answered
-
-        # Inner loop to display question until it's answered or the time runs out
-        while not answered and running:
-            clock.tick(60)  # Control the frame rate
+            button.draw(self.screen)
+        
+        # Timer and player count
+        timer_text = self.small_font.render(f"Time: {time_left//1000}s", True, CHOICE_COLORS[0])
+        players_text = self.small_font.render(f"Players: {len(players)}", True, CHOICE_COLORS[0])
+        
+        # Player answers status
+        answered_count = sum(1 for p in players.values() if p['answer'] is not None)
+        status_text = self.small_font.render(
+            f"Answered: {answered_count}/{len(players)}", 
+            True, 
+            CHOICE_COLORS[0]
+        )
+        
+        self.screen.blit(timer_text, (10, 10))
+        self.screen.blit(players_text, (WIDTH - 150, 10))
+        self.screen.blit(status_text, (WIDTH//2 - 50, 40))
+        
+        pygame.display.flip()
+    
+    def display_results(self, players):
+        self.screen.fill(BACKGROUND)
+        
+        # Sort players by score
+        sorted_players = sorted(
+            players.items(), 
+            key=lambda x: x[1]['score'], 
+            reverse=True
+        )
+        
+        title_text = self.font.render("Current Standings", True, CHOICE_COLORS[0])
+        title_rect = title_text.get_rect(center=(WIDTH//2, 50))
+        self.screen.blit(title_text, title_rect)
+        
+        y_pos = 150
+        for name, data in sorted_players:
+            score_text = self.small_font.render(
+                f"{name}: {data['score']} points", 
+                True, 
+                CHOICE_COLORS[0]
+            )
+            score_rect = score_text.get_rect(center=(WIDTH//2, y_pos))
+            self.screen.blit(score_text, score_rect)
+            y_pos += 40
+        
+        pygame.display.flip()
+        pygame.time.wait(2000)
+    
+    def update_scores(self, players, correct_answer_index):
+        for player_data in players.values():
+            if player_data['answer'] == correct_answer_index:
+                player_data['score'] += 1
+    
+    def run(self):
+        clock = pygame.time.Clock()
+        running = True
+        
+        while running and self.current_question < len(self.quiz_data['quiz']):
+            question = self.quiz_data['quiz'][self.current_question]
+            self.firebase.update_game_state(question)
+            self.firebase.reset_answers()
             
-            current_time = pygame.time.get_ticks()  # Current time for countdown
-            time_left = current_countdown - (current_time - start_time)  # Calculate time left
+            start_time = pygame.time.get_ticks()
+            countdown = get_countdown_time()
             
-            # Check if time has run out for the question
-            if time_left <= 0:
-                display_timeout(screen, font)  # Display timeout message
-                question_index += 1  # Move to the next question
-                if question_index >= len(quiz_data['quiz']):  # If no more questions
-                    display_final_score(screen, font, small_font, score, len(quiz_data['quiz']))
-                    running = False  # End the game
-                break
-
-            # Display the question, choices, and countdown
-            display_question(question, screen, font, small_font, buttons, time_left, 
-                             question_index, len(quiz_data['quiz']), current_countdown)
-            
-            
-            
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:  # Check for quit event
-                    running = False
+            while running:
+                clock.tick(60)
+                current_time = pygame.time.get_ticks()
+                time_left = countdown - (current_time - start_time)
                 
-                for i, button in enumerate(buttons):
-                    if button.is_clicked(event):  # Check if a button was clicked
-                        button.selected = True  # Mark button as selected
-                        selected_choice = question['choices'][i]  # Get selected choice
+                if time_left <= 0:
+                    break
+                
+                current_players = self.firebase.get_players()
+                self.display_question(question, time_left, current_players)
+                
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                
+                # Check if all players answered
+                all_answered = all(
+                    p['answer'] is not None 
+                    for p in current_players.values()
+                )
+                if all_answered and len(current_players) > 0:
+                    break
+            
+            if running:
+                correct_answer_index = question['choices'].index(question['answer'])
+                current_players = self.firebase.get_players()
+                self.update_scores(current_players, correct_answer_index)
+                self.display_results(current_players)
+                self.current_question += 1
+        
+        self.firebase.game_ref.update({'game_over': True})
+        pygame.quit()
 
-                        # Check if the selected choice is correct
-                        if selected_choice == question['answer']:
-                            button.correct = True  # Mark button as correct
-                            score += 1  # Increase score
-                            display_feedback(screen, font, small_font, True, question['answer'], 
-                                             score, len(quiz_data['quiz']))
-                        else:
-                            button.wrong = True  # Mark button as incorrect
-                            display_feedback(screen, font, small_font, False, question['answer'], 
-                                             score, len(quiz_data['quiz']))
-                        
-                        answered = True  # Mark question as answered
-                        question_index += 1  # Move to next question
-                        if question_index >= len(quiz_data['quiz']):  # If no more questions
-                            display_final_score(screen, font, small_font, score, len(quiz_data['quiz']))
-                            running = False  # End the game
-                        break
-
-            pygame.display.flip()  # Update the screen display
-
-    pygame.quit()  # Quit the game
+def quiz_game():
+    game = MultiplayerQuiz()
+    game.run()
