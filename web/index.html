@@ -4,83 +4,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Game</title>
+    <title>Interactive Quiz Game</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f2f5;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
         }
 
         .container {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             width: 90%;
-            max-width: 500px;
+            max-width: 600px;
+            backdrop-filter: blur(10px);
+            transform: translateY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .container:hover {
+            transform: translateY(-5px);
         }
 
         .page {
             display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .active {
             display: block;
         }
 
-        input,
-        button {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
-        button {
-            background-color: #4CAF50;
+        input {
+            width: 100%;
+            padding: 1rem;
+            margin: 1rem 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+
+        .start-button {
+            width: 100%;
+            padding: 1rem;
+            background: #4CAF50;
             color: white;
             border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 1rem;
         }
 
-        button:hover {
-            background-color: #45a049;
+        .start-button:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .quiz-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
         }
 
         .quiz-button {
-            margin: 5px 0;
-            font-size: 1.1em;
+            aspect-ratio: 16/9;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+        }
+
+        .quiz-button:hover::before {
+            transform: translateX(0);
+        }
+
+        #btn1 {
+            background: linear-gradient(135deg, #D82B2B, #ff6b6b);
+        }
+
+        #btn2 {
+            background: linear-gradient(135deg, #347ABD, #4facfe);
+        }
+
+        #btn3 {
+            background: linear-gradient(135deg, #E2B446, #ffd93d);
+        }
+
+        #btn4 {
+            background: linear-gradient(135deg, #4E9A43, #6dd5ed);
+        }
+
+        .quiz-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
         }
     </style>
 </head>
 
 <body>
     <div class="container">
-        <!-- Name Input Page -->
         <div id="namePage" class="page active">
-            <h2>Enter Your Name</h2>
-            <input type="text" id="nameInput" placeholder="Your name">
-            <button onclick="submitName()">Start Quiz</button>
+            <h2>Welcome to Quiz</h2>
+            <input type="text" id="nameInput" placeholder="Enter your name to begin..." autocomplete="off">
+            <button class="start-button" onclick="submitName()">Start Quiz</button>
         </div>
 
-        <!-- Quiz Page -->
         <div id="quizPage" class="page">
-            <h2>Quiz</h2>
-            <p>Select your answer:</p>
-            <button class="quiz-button" onclick="submitAnswer(1)">1</button>
-            <button class="quiz-button" onclick="submitAnswer(2)">2</button>
-            <button class="quiz-button" onclick="submitAnswer(3)">3</button>
-            <button class="quiz-button" onclick="submitAnswer(4)">4</button>
+            <h2>Choose Your Answer</h2>
+            <div class="quiz-grid">
+                <button class="quiz-button" onclick="submitAnswer(1)" id="btn1">1</button>
+                <button class="quiz-button" onclick="submitAnswer(2)" id="btn2">2</button>
+                <button class="quiz-button" onclick="submitAnswer(3)" id="btn3">3</button>
+                <button class="quiz-button" onclick="submitAnswer(4)" id="btn4">4</button>
+            </div>
         </div>
     </div>
 
@@ -101,6 +205,9 @@
         const database = firebase.database();
         let currentName = '';
 
+        // Initialize audio
+        const audio = new Audio('https://media.geeksforgeeks.org/wp-content/uploads/20190531135120/beep.mp3');
+
         function submitName() {
             const nameInput = document.getElementById('nameInput');
             const name = nameInput.value.trim();
@@ -113,7 +220,10 @@
                     command: 'login'
                 });
 
-                // Switch to quiz page
+                // Play sound
+                audio.play();
+
+                // Switch to quiz page with animation
                 document.getElementById('namePage').classList.remove('active');
                 document.getElementById('quizPage').classList.add('active');
             } else {
@@ -122,12 +232,29 @@
         }
 
         function submitAnswer(number) {
+            // Play sound
+            audio.play();
+
             // Send answer to Firebase
             database.ref('controls').set({
                 name: currentName,
                 command: number.toString()
             });
+
+            // Add visual feedback
+            const btn = document.getElementById(`btn${number}`);
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
         }
+
+        // Handle enter key on name input
+        document.getElementById('nameInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                submitName();
+            }
+        });
     </script>
 </body>
 
