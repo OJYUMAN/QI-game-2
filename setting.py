@@ -171,11 +171,11 @@ QFrame#settingsFrame {
         frame_layout.addLayout(questions_layout)
         
         # File selection
-        self.file_path = ""
-        file_button = QPushButton("Select File")
-        file_button.setObjectName("fileButton")
-        file_button.clicked.connect(self.select_file)
-        frame_layout.addWidget(file_button)
+        # self.file_path = ""
+        # file_button = QPushButton("Select File")
+        # file_button.setObjectName("fileButton")
+        # file_button.clicked.connect(self.select_file)
+        # frame_layout.addWidget(file_button)
         
         # Submit button
         submit_button = QPushButton("Create Quiz")
@@ -186,11 +186,11 @@ QFrame#settingsFrame {
         main_layout.addWidget(settings_frame)
         self.setLayout(main_layout)
         
-    def select_file(self):
-        self.file_path, _ = QFileDialog.getOpenFileName(
-            self, "Select a File", "", "All Files (*)")
-        if self.file_path:
-            print(f"Selected file: {self.file_path}")
+    # def select_file(self):
+    #     self.file_path, _ = QFileDialog.getOpenFileName(
+    #         self, "Select a File", "", "All Files (*)")
+    #     if self.file_path:
+    #         print(f"Selected file: {self.file_path}")
             
     def submit(self):
         input_text = self.text_input.toPlainText()
@@ -208,7 +208,7 @@ QFrame#settingsFrame {
         print(f"Selected difficulty level: {difficulty_level}")
         print(f"Number of questions: {number_of_questions}")
         print(f"Time per question: {countdown_time}")
-        print(f"Selected file path: {self.file_path}")
+       # print(f"Selected file path: {self.file_path}")
         
         # Update the class variable instead of the global variable
         ModernDialog.countdown_time = countdown_time * 1000  # Convert seconds to milliseconds

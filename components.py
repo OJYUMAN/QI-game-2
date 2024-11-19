@@ -29,8 +29,8 @@ def init_game_display():
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("QI-game")
-    font = pygame.font.Font("thai.ttf", 24)
-    small_font = pygame.font.Font("thai.ttf", 18)
+    font = pygame.font.Font("assets/thai.ttf", 24)
+    small_font = pygame.font.Font("assets/thai.ttf", 18)
     return screen, font, small_font
 
 class ModernButton:

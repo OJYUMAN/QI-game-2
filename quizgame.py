@@ -19,14 +19,32 @@ class MultiplayerQuiz:
         self.animation_speed = 0.05
         
         # Load background image
-        self.background = pygame.image.load('631.png')  # Make sure this file exists
+        self.background = pygame.image.load('assets/631.png')  # Make sure this file exists
         self.background = pygame.transform.scale(self.background, (WIDTH, HEIGHT))
         
         # Colors
         self.BLUE = (37, 58, 177)
         self.WHITE = (255, 255, 255)
         self.NAVY = (20, 29, 89)
+        self.RED = (220, 53, 69)
+        self.RED_HOVER = (201, 42, 57)
         
+    def draw_skip_button(self):
+        # Draw skip button background with hover effect
+        mouse_pos = pygame.mouse.get_pos()
+        button_rect = pygame.Rect(WIDTH - 150, HEIGHT - 60, 120, 40)
+        color = self.RED_HOVER if button_rect.collidepoint(mouse_pos) else self.RED
+        
+        # Draw button with rounded corners
+        pygame.draw.rect(self.screen, color, button_rect, border_radius=10)
+        
+        # Draw text
+        skip_text = self.small_font.render("Skip", True, self.WHITE)
+        text_rect = skip_text.get_rect(center=button_rect.center)
+        self.screen.blit(skip_text, text_rect)
+        
+        return button_rect
+            
     def load_quiz(self, filename):
         with open(filename, 'r') as f:
             return json.load(f)
@@ -81,7 +99,11 @@ class MultiplayerQuiz:
         self.screen.blit(players_text, (WIDTH - 150, 10))
         self.screen.blit(status_text, (WIDTH//2 - 50, 120))
         
+        # Draw skip button and get its rect
+        skip_button_rect = self.draw_skip_button()
+        
         pygame.display.flip()
+        return skip_button_rect
     
     def display_results(self, players):
         clock = pygame.time.Clock()
@@ -153,8 +175,9 @@ class MultiplayerQuiz:
             
             start_time = pygame.time.get_ticks()
             countdown = get_countdown_time()
+            skip_clicked = False
             
-            while running:
+            while running and not skip_clicked:
                 clock.tick(60)
                 current_time = pygame.time.get_ticks()
                 time_left = countdown - (current_time - start_time)
@@ -163,11 +186,16 @@ class MultiplayerQuiz:
                     break
                 
                 current_players = self.firebase.get_players()
-                self.display_question(question, time_left, current_players)
+                skip_button_rect = self.display_question(question, time_left, current_players)
                 
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT:
                         running = False
+                    elif event.type == pygame.MOUSEBUTTONDOWN:
+                        mouse_pos = pygame.mouse.get_pos()
+                        if skip_button_rect.collidepoint(mouse_pos):
+                            skip_clicked = True
+                            break
                 
                 all_answered = all(
                     p['answer'] is not None 
