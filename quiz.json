@@ -1,54 +1,54 @@
 {
     "quiz": [
         {
-            "question": "What does OOP stand for in Python?",
+            "question": "คำไหนเป็นคำที่ใช้ในการจีบสาว?",
             "choices": [
-                "Object-Oriented Programming",
-                "Optimized Output Processor",
-                "Overriding Object Parameters",
-                "Online Object Parser"
+                "ขอเสียง",
+                "ขอนาน",
+                "ขอเมา",
+                "ขอจีบ"
             ],
-            "answer": "Object-Oriented Programming"
+            "answer": "ขอจีบ"
         },
         {
-            "question": "Which keyword is used to define a class in Python?",
+            "question": "การจีบสาวควรทำอย่างไรเพื่อให้ได้ผล?",
             "choices": [
-                "def",
-                "class",
-                "var",
-                "new"
+                "เข้าใจใจ",
+                "จอง",
+                "เจาะ",
+                "จีบ"
             ],
-            "answer": "class"
+            "answer": "เข้าใจใจ"
         },
         {
-            "question": "Which concept in OOP allows defining a blueprint for creating objects?",
+            "question": "ทำไมการจีบสาวถึงสำคัญ?",
             "choices": [
-                "Inheritance",
-                "Encapsulation",
-                "Polymorphism",
-                "Abstraction"
+                "เพื่อการสร้างความสัมพันธ์",
+                "เพื่อหาเพื่อน",
+                "เพื่ออยู่ด้วยกัน",
+                "เพื่อทดลอง"
             ],
-            "answer": "Abstraction"
+            "answer": "เพื่อการสร้างความสัมพันธ์"
         },
         {
-            "question": "What is the process of creating an object from a class called?",
+            "question": "การจีบสาวมีความสำคัญต่อชีวิตประจำวันหรือไม่?",
             "choices": [
-                "Instantiation",
-                "Derivation",
-                "Polymorphism",
-                "Encapsulation"
+                "ไม่สำคัญ",
+                "สำคัญมาก",
+                "สำคัญน้อย",
+                "ไม่แน่ใจ"
             ],
-            "answer": "Instantiation"
+            "answer": "สำคัญมาก"
         },
         {
-            "question": "Which feature in OOP allows one class to inherit properties and behaviors from another class?",
+            "question": "การจีบสาวควรทำอย่างไรให้เป็นไปตามแผน?",
             "choices": [
-                "Polymorphism",
-                "Encapsulation",
-                "Inheritance",
-                "Abstraction"
+                "จีบหลายคน",
+                "จีบตามสไตล์",
+                "จีบให้มีหลัก",
+                "จีบสาว"
             ],
-            "answer": "Inheritance"
+            "answer": "จีบให้มีหลัก"
         }
     ]
 }
