@@ -1,34 +1,54 @@
 {
     "quiz": [
         {
-            "question": "การเปิดโปรแกรม Finder บน Mac ทำได้โดยการคลิกที่อะไร?",
+            "question": "What does OOP stand for in Python?",
             "choices": [
-                "Dock",
-                "Menu Bar",
-                "Desktop",
-                "Trash"
+                "Object-Oriented Programming",
+                "Optimized Output Processor",
+                "Overriding Object Parameters",
+                "Online Object Parser"
             ],
-            "answer": "Dock"
+            "answer": "Object-Oriented Programming"
         },
         {
-            "question": "การสร้างโฟลเดอร์ใหม่บน Mac ทำได้โดยการกดคีย์ลัดใด?",
+            "question": "Which keyword is used to define a class in Python?",
             "choices": [
-                "Cmd + N",
-                "Cmd + C",
-                "Cmd + V",
-                "Cmd + S"
+                "def",
+                "class",
+                "var",
+                "new"
             ],
-            "answer": "Cmd + N"
+            "answer": "class"
         },
         {
-            "question": "การล็อกหน้าจอของ Mac ทำได้โดยใช้คีย์ลัดใด?",
+            "question": "Which concept in OOP allows defining a blueprint for creating objects?",
             "choices": [
-                "Cmd + Ctrl + Q",
-                "Cmd + Shift + Q",
-                "Cmd + Option + Q",
-                "Cmd + Esc"
+                "Inheritance",
+                "Encapsulation",
+                "Polymorphism",
+                "Abstraction"
             ],
-            "answer": "Cmd + Ctrl + Q"
+            "answer": "Abstraction"
+        },
+        {
+            "question": "What is the process of creating an object from a class called?",
+            "choices": [
+                "Instantiation",
+                "Derivation",
+                "Polymorphism",
+                "Encapsulation"
+            ],
+            "answer": "Instantiation"
+        },
+        {
+            "question": "Which feature in OOP allows one class to inherit properties and behaviors from another class?",
+            "choices": [
+                "Polymorphism",
+                "Encapsulation",
+                "Inheritance",
+                "Abstraction"
+            ],
+            "answer": "Inheritance"
         }
     ]
 }

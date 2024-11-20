@@ -170,12 +170,12 @@ QFrame#settingsFrame {
         
         frame_layout.addLayout(questions_layout)
         
-        # File selection
-        # self.file_path = ""
-        # file_button = QPushButton("Select File")
-        # file_button.setObjectName("fileButton")
-        # file_button.clicked.connect(self.select_file)
-        # frame_layout.addWidget(file_button)
+       # File selection
+        self.file_path = ""
+        file_button = QPushButton("Select File")
+        file_button.setObjectName("fileButton")
+        file_button.clicked.connect(self.select_file)
+        frame_layout.addWidget(file_button)
         
         # Submit button
         submit_button = QPushButton("Create Quiz")
@@ -186,11 +186,11 @@ QFrame#settingsFrame {
         main_layout.addWidget(settings_frame)
         self.setLayout(main_layout)
         
-    # def select_file(self):
-    #     self.file_path, _ = QFileDialog.getOpenFileName(
-    #         self, "Select a File", "", "All Files (*)")
-    #     if self.file_path:
-    #         print(f"Selected file: {self.file_path}")
+    def select_file(self):
+        self.file_path, _ = QFileDialog.getOpenFileName(
+            self, "Select a File", "", "All Files (*)")
+        if self.file_path:
+            print(f"Selected file: {self.file_path}")
             
     def submit(self):
         input_text = self.text_input.toPlainText()

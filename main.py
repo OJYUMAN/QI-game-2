@@ -1,9 +1,5 @@
-
-
-
-
 if __name__ == '__main__':
-    from welcome import welcome_screen
+    from welcome import welcome_screen 
     welcome_screen()
 
     from login import run_login
